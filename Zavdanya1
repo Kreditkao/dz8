@@ -1,0 +1,146 @@
+#include <iostream>
+using namespace std;
+
+template <typename T>
+class DNode {
+public:
+    T info;
+    DNode* prev;
+    DNode* next;
+
+    DNode(T a) { info = a; next = prev = nullptr; }
+};
+
+template <typename U>
+class DList {
+    DNode<U>* head;
+    DNode<U>* current;
+public:
+    DList() { head = nullptr; current = nullptr; }
+    ~DList() {
+        while (head != nullptr) {
+            DNode<U>* temp = head;
+            head = head->next;
+            delete temp;
+        }
+    }
+
+    void push_back(U value) {
+        DNode<U>* newNode = new DNode<U>(value);
+        if (head == nullptr) {
+            head = newNode;
+        }
+        else {
+            DNode<U>* temp = head;
+            while (temp->next != nullptr) {
+                temp = temp->next;
+            }
+            temp->next = newNode;
+            newNode->prev = temp;
+        }
+    }
+
+    void show() {
+        DNode<U>* temp = head;
+        while (temp != nullptr) {
+            cout << temp->info << " ";
+            temp = temp->next;
+        }
+        cout << endl;
+    }
+
+    DNode<U>* search(U value) {
+        DNode<U>* temp = head;
+        while (temp != nullptr) {
+            if (temp->info == value) return temp;
+            temp = temp->next;
+        }
+        return nullptr;
+    }
+
+    void push_front(U value) {
+        DNode<U>* newNode = new DNode<U>(value);
+        if (head == nullptr) {
+            head = newNode;
+        }
+        else {
+            newNode->next = head;
+            head->prev = newNode;
+            head = newNode;
+        }
+    }
+
+    void insertBefore(U before, U value) {
+        DNode<U>* existing = search(before);
+        if (existing != nullptr) {
+            DNode<U>* newNode = new DNode<U>(value);
+            newNode->next = existing;
+            newNode->prev = existing->prev;
+            if (existing->prev != nullptr) {
+                existing->prev->next = newNode;
+            }
+            else {
+                head = newNode; // новий вузол стає головою, якщо вставляємо до першого елемента
+            }
+            existing->prev = newNode;
+        }
+    }
+
+    void insertAfter(U after, U value) {
+        DNode<U>* existing = search(after);
+        if (existing != nullptr) {
+            DNode<U>* newNode = new DNode<U>(value);
+            newNode->prev = existing;
+            newNode->next = existing->next;
+            if (existing->next != nullptr) {
+                existing->next->prev = newNode;
+            }
+            existing->next = newNode;
+        }
+    }
+
+    void erase(U value) {
+        DNode<U>* existing = search(value);
+        if (existing != nullptr) {
+            if (existing->prev != nullptr) {
+                existing->prev->next = existing->next;
+            }
+            else {
+                head = existing->next; // якщо видаляємо перший елемент
+            }
+            if (existing->next != nullptr) {
+                existing->next->prev = existing->prev;
+            }
+            delete existing;
+        }
+    }
+};
+
+int main() {
+    DList<int> list;
+
+    list.push_back(10);
+    list.push_back(20);
+    list.push_back(30);
+
+    cout << "Initial list: ";
+    list.show();
+
+    list.push_front(5);
+    cout << "After push_front(5): ";
+    list.show();
+
+    list.insertBefore(20, 15);
+    cout << "After insertBefore(20, 15): ";
+    list.show();
+
+    list.insertAfter(20, 25);
+    cout << "After insertAfter(20, 25): ";
+    list.show();
+
+    list.erase(15);
+    cout << "After erase(15): ";
+    list.show();
+
+    return 0;
+}
