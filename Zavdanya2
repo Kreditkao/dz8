@@ -1,0 +1,100 @@
+#include <iostream>
+#include <list>
+#include <string>
+using namespace std;
+
+class Taxi {
+public:
+    int number;
+    string brand;
+    string driver;
+    bool onCall; // true - на виклику, false - вільне
+
+    Taxi(int num, string br, string dr, bool call)
+        : number(num), brand(br), driver(dr), onCall(call) {}
+};
+
+void showAllTaxis(const list<Taxi>& taxis) {
+    for (const auto& taxi : taxis) {
+        cout << "Number: " << taxi.number << ", Brand: " << taxi.brand
+            << ", Driver: " << taxi.driver << ", Status: "
+            << (taxi.onCall ? "On Call" : "Free") << endl;
+    }
+}
+
+void showTaxisByStatus(const list<Taxi>& taxis, bool status) {
+    for (const auto& taxi : taxis) {
+        if (taxi.onCall == status) {
+            cout << "Number: " << taxi.number << ", Brand: " << taxi.brand
+                << ", Driver: " << taxi.driver << endl;
+        }
+    }
+}
+
+void addTaxiToFront(list<Taxi>& taxis, const Taxi& taxi) {
+    taxis.push_front(taxi);
+}
+
+void addTaxiBefore(list<Taxi>& taxis, int beforeNumber, const Taxi& taxi) {
+    for (auto it = taxis.begin(); it != taxis.end(); ++it) {
+        if (it->number == beforeNumber) {
+            taxis.insert(it, taxi);
+            return;
+        }
+    }
+}
+
+void removeTaxi(list<Taxi>& taxis, int number) {
+    for (auto it = taxis.begin(); it != taxis.end(); ++it) {
+        if (it->number == number) {
+            taxis.erase(it);
+            return;
+        }
+    }
+}
+
+void setTaxiStatus(list<Taxi>& taxis, int number, bool status) {
+    for (auto& taxi : taxis) {
+        if (taxi.number == number) {
+            taxi.onCall = status;
+            return;
+        }
+    }
+}
+
+int main() {
+    list<Taxi> onTaxi = {
+        {1, "Toyota", "Ivanov I.I.", false},
+        {2, "Ford", "Petrov P.P.", true},
+        {3, "Honda", "Sidorov S.S.", false}
+    };
+
+    cout << "Initial taxi list:\n";
+    showAllTaxis(onTaxi);
+
+    Taxi newTaxi(4, "BMW", "Kuznetsov K.K.", false);
+    addTaxiToFront(onTaxi, newTaxi);
+    cout << "\nAfter adding a taxi to the front:\n";
+    showAllTaxis(onTaxi);
+
+    Taxi anotherTaxi(5, "Mercedes", "Nikolaev N.N.", true);
+    addTaxiBefore(onTaxi, 3, anotherTaxi);
+    cout << "\nAfter adding a taxi before number 3:\n";
+    showAllTaxis(onTaxi);
+
+    removeTaxi(onTaxi, 2);
+    cout << "\nAfter removing taxi number 2:\n";
+    showAllTaxis(onTaxi);
+
+    setTaxiStatus(onTaxi, 4, true);
+    cout << "\nAfter setting taxi number 4 to on call:\n";
+    showAllTaxis(onTaxi);
+
+    cout << "\nFree taxis:\n";
+    showTaxisByStatus(onTaxi, false);
+
+    cout << "\nTaxis on call:\n";
+    showTaxisByStatus(onTaxi, true);
+
+    return 0;
+}
